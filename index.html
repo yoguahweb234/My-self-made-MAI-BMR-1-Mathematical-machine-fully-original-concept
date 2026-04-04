@@ -966,8 +966,8 @@ html, body {
     if (!keyboard) return;
     var keys = [
       ['7', '8', '9', '\u00F7', 'ARC'],
-      ['4', '5', '6', '\u00D7', 'CLR'],
-      ['1', '2', '3', '-', 'BS'],
+      ['4', '5', '6', '\u00D7', '\u221A'],
+      ['1', '2', '3', '-', '\u03C0'],
       ['.', '0', '\u00B1', '+', '=']
     ];
     
@@ -984,6 +984,8 @@ html, body {
         } else if (key === '=') {
           btn.classList.add('equals');
         } else if (key === 'ARC' || key === 'CLR' || key === 'BS') {
+          btn.classList.add('action');
+        } else if (key === '\u221A' || key === '\u03C0') {
           btn.classList.add('action');
         }
         
@@ -1025,6 +1027,12 @@ html, body {
         break;
       case 'ARC':
         openArchive();
+        break;
+      case '\u221A':
+        applySqrt();
+        break;
+      case '\u03C0':
+        insertPi();
         break;
     }
   }
@@ -1079,6 +1087,25 @@ html, body {
     state.operation = null;
     state.waitingForOperand = false;
     updateDisplay('0');
+  }
+
+  function insertPi() {
+    state.currentInput = Math.PI.toString();
+    if (state.currentInput.length > 8) {
+      state.currentInput = state.currentInput.slice(0, 8);
+    }
+    updateDisplay(state.currentInput);
+  }
+
+  function applySqrt() {
+    var current = parseFloat(state.currentInput);
+    if (current < 0) {
+      showError();
+      return;
+    }
+    var result = Math.sqrt(current);
+    state.currentInput = formatResult(result);
+    updateDisplay(state.currentInput);
   }
 
   function setOperation(op) {
@@ -1402,7 +1429,8 @@ html, body {
       '0': '0', '1': '1', '2': '2', '3': '3', '4': '4',
       '5': '5', '6': '6', '7': '7', '8': '8', '9': '9',
       '.': '.', '+': '+', '-': '-', '*': '\u00D7', '/': '\u00F7',
-      '=': '=', 'Enter': '=', 'Backspace': 'BS', 'Escape': 'CLR'
+      '=': '=', 'Enter': '=', 'Backspace': 'BS', 'Escape': 'CLR',
+      'p': '\u03C0', 'P': '\u03C0', 's': '\u221A', 'S': '\u221A'
     };
     
     if (keyMap[e.key]) {
